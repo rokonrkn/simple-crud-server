@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require("express"); 
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
@@ -33,6 +33,30 @@ async function run() {
     app.get('/users', async(req, res) =>{
       const cursor = haiku.find()
       const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    app.get('/users/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await haiku.findOne(query)
+      res.send(result)
+      console.log(id)
+    })
+
+    app.put('/users/:id', async(req, res)=>{
+      const id = req.params.id;
+      const update = req.body;
+      console.log(update)
+      const filter = {_id: new ObjectId(id)}
+      const options = { upsert: true }
+      const updatedUser = {
+        $set:{
+          name: update.name,
+          email: update.email
+        }
+      }
+      const result = await haiku.updateOne(filter, updatedUser, options)
       res.send(result)
     })
 
